@@ -1,0 +1,174 @@
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=product-db
+    networks:
+      - ecom-network
+
+  mongo-express:
+    depends_on:
+      - mongodb
+    image: mongo-express:latest
+    restart: always
+    ports:
+      - "8083:8083"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_SITE_PORT=8083
+    networks:
+      - ecom-network
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    platform: linux/amd64
+    ports:
+      - "2181:2181"
+    networks:
+      - ecom-network
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: 10.10.9.142
+      KAFKA_CREATE_TOPICS: "R1"
+    networks:
+      - ecom-network
+
+  postgres-service:
+    image: postgres
+    container_name: postgres-service
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: k1234
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+    healthcheck:
+      test: "exit 0"
+    networks:
+      - ecom-network
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: xxxx@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: azer
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ecom-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-service:5432/keycloak_db
+      KC_DB_USERNAME: keycloak
+      # KC_HOSTNAME: 0.0.0.0
+      KC_DB_PASSWORD: k1234
+      KEYCLOAK_ADMIN: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: "localhost"
+    #      KC_HOSTNAME_STRICT: "false"
+    #      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+    command:
+      - start-dev
+    restart: always
+    ports:
+      - '8080:8080'
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    expose:
+      - '8080'
+    depends_on:
+      - postgres-service
+    networks:
+      - ecom-network
+
+#  product-service:
+#    build:
+#      context: ./product-service #/ecom-backend
+#      dockerfile: Dockerfile
+#    container_name: product-service
+#    platform: linux/amd64
+#    ports:
+#      - '8082:8082'
+#    expose:
+#      - '8082'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+#      interval: 10s
+#      retries: 20
+#    depends_on:
+#      - mongodb
+#    environment:
+#      - MONGODB_HOST=mongodb
+#    networks:
+#      - ecom-network
+
+#  customer-service:
+#    build:
+#      context: ./customer-service #/ecom-backend
+#      dockerfile: Dockerfile
+#    container_name: customer-service
+#    platform: linux/amd64
+#    ports:
+#      - '8081:8081'
+#    expose:
+#      - '8081'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+#      interval: 10s
+#      retries: 20
+#    depends_on:
+#      - mongodb
+#    environment:
+#      - PRODUCT_SERVICE_URL=http://product-service:8082
+#      - MONGODB_HOST=mongodb
+#    networks:
+#      - ecom-network
+
+#  ecom-front:
+#    build: ./ecom-front
+#    container_name: ecom-front
+#    ports:
+#      - '4200:80'
+#    expose:
+#      - '4200'
+#    environment:
+#      - productService=http://product-service:8082
+#      - customerService=http://customer-service:8081
+#    depends_on:
+#      customer-service:
+#        condition: service_healthy
+#      product-service:
+#        condition: service_healthy
+
+volumes:
+  pgadmin_data:
+  keycloak_data:
+
+networks:
+  ecom-network:
+    driver: bridge
