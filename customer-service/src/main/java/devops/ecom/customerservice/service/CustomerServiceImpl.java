@@ -1,7 +1,7 @@
 package devops.ecom.customerservice.service;
 
-import devops.ecom.customerservice.dao.Customer;
-import devops.ecom.customerservice.dao.ShoppingCart;
+import devops.ecom.customerservice.model.Customer;
+import devops.ecom.customerservice.model.ShoppingCart;
 import devops.ecom.customerservice.repos.CustomerRepo;
 import devops.ecom.customerservice.repos.ShoppingCartRepo;
 import lombok.Data;
@@ -22,8 +22,8 @@ import java.util.UUID;
 @Transactional
 @Data
 public class CustomerServiceImpl implements CustomerService {
-    private CustomerRepo customerRepo ;
-    private ShoppingCartRepo shoppingCartRepo ;
+    private CustomerRepo customerRepo;
+    private ShoppingCartRepo shoppingCartRepo;
 
     @Value("${keycloak.auth-server-url}")
     private String keycloakUrl;
@@ -94,7 +94,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .customerId(customer.getCustomerId()).build();
         ShoppingCart insertedCart = this.shoppingCartRepo.insert(cart);
         customer.setShoppingCart(insertedCart);
-        return  this.customerRepo.insert(customer);
+        return this.customerRepo.insert(customer);
     }
 
     @Override
@@ -111,13 +111,13 @@ public class CustomerServiceImpl implements CustomerService {
         List<UserRepresentation> keycloakUsers = keycloak.realm(keycloakRealm).users().list();
         for (UserRepresentation keycloakUser : keycloakUsers) {
             Optional<Customer> optionalUser = customerRepo.findById(keycloakUser.getId());
-            Customer customer ;
-            if(optionalUser.isPresent()){
+            Customer customer;
+            if (optionalUser.isPresent()) {
                 // updating the user
                 customer = optionalUser.get();
-            }else {
+            } else {
                 // initializing user info
-                customer = new  Customer() ;
+                customer = new Customer();
                 ShoppingCart cart = ShoppingCart.builder()
                         .id(UUID.randomUUID().toString())
                         .items(new ArrayList<>())

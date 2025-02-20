@@ -4,19 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Product {
-    private String productId ;
+    @Id
+    private String productId;
     private String name;
     private Price productPrice;
-    private  String pickedColor;
+    private String pickedColor;
     private List<String> productImagesBas64;
 }

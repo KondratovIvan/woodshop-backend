@@ -1,16 +1,18 @@
-package devops.ecom.customerservice.dao;
+package devops.ecom.customerservice.model;
 
-import devops.ecom.customerservice.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ShoppingCartItem {
+    @Id
+    private String id;
     private Product product;
     private int quantity;
 }

@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data @NoArgsConstructor @AllArgsConstructor
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Price {
-    private String currency ;
-    private long price ;
-    private String symbol ;
+    private String currency;
+    private BigDecimal price;
+    private String symbol;
 }
