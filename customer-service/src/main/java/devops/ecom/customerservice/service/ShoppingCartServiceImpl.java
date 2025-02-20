@@ -79,6 +79,43 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     }
 
+    @Override
+    public ShoppingCart decreaseItemQuantity(String customerId, String productId) throws CustomerNotFoundException {
+        Customer customer = this.customerRepo.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + customerId + " not found"));
+        ShoppingCart shoppingCart = customer.getShoppingCart();
+        ShoppingCartItem item = checkProductInCart(shoppingCart, productId);
+        if (item == null) {
+            throw new RuntimeException("Product not found in shopping cart");
+        }
+
+        if (item.getQuantity() > 1) {
+            item.setQuantity(item.getQuantity() - 1);
+        } else {
+            shoppingCart.getItems().remove(item);
+        }
+        ShoppingCart savedCart = this.shoppingCartRepo.save(shoppingCart);
+        customer.setShoppingCart(savedCart);
+        this.customerRepo.save(customer);
+        return savedCart;
+    }
+
+    @Override
+    public ShoppingCart increaseItemQuantity(String customerId, String productId) throws CustomerNotFoundException {
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with id " + customerId + " not found"));
+        ShoppingCart shoppingCart = customer.getShoppingCart();
+        ShoppingCartItem item = checkProductInCart(shoppingCart, productId);
+        if (item == null) {
+            throw new RuntimeException("Product not found in shopping cart");
+        }
+        item.setQuantity(item.getQuantity() + 1);
+        ShoppingCart savedCart = shoppingCartRepo.save(shoppingCart);
+        customer.setShoppingCart(savedCart);
+        customerRepo.save(customer);
+        return savedCart;
+    }
+
     private ShoppingCartItem checkProductInCart(ShoppingCart cart, String productId) {
         for (ShoppingCartItem item : cart.getItems()) {
             if (productId.equals(item.getProduct().getProductId()))

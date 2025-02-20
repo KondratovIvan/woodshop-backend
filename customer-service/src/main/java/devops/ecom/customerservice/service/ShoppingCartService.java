@@ -13,4 +13,9 @@ public interface ShoppingCartService {
     ShoppingCart removeItemFromCart(String customerId, String productId) throws CustomerNotFoundException;
 
     ShoppingCart updateItemInCart(ShoppingCartItem item, AddItemRequest addItemRequest, ShoppingCart cart);
+
+    ShoppingCart decreaseItemQuantity(String customerId, String productId) throws CustomerNotFoundException;
+
+    ShoppingCart increaseItemQuantity(String customerId, String productId) throws CustomerNotFoundException;
+
 }

@@ -25,6 +25,26 @@ public class CustomerController {
         }
     }
 
+    @PutMapping("/{customerId}/{productId}/increase")
+    public ShoppingCart increaseProductQuantity(@PathVariable String customerId,
+                                                @PathVariable String productId) {
+        try {
+            return cartService.increaseItemQuantity(customerId, productId);
+        } catch (CustomerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PutMapping("/{customerId}/{productId}/decrease")
+    public ShoppingCart decreaseProductQuantity(@PathVariable String customerId,
+                                                @PathVariable String productId) {
+        try {
+            return this.cartService.decreaseItemQuantity(customerId, productId);
+        } catch (CustomerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @DeleteMapping("{customerId}/{productId}")
     public ShoppingCart deleteItemFromCart(@PathVariable String customerId, @PathVariable String productId) {
         try {

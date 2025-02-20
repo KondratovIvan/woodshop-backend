@@ -46,7 +46,7 @@ public class OrderService {
         payment.setOrderId(order.getId());
         payment.setAmount(totalAmount);
         payment.setCurrency(orderDto.getPayment().getCurrency());
-        payment.setMethod(orderDto.getPayment().getMethod());
+        payment.setByCreditCard(orderDto.getPayment().getByCreditCard());
         payment.setCreatedAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 

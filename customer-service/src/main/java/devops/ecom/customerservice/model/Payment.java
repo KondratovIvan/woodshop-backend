@@ -17,7 +17,7 @@ public class Payment {
     private String orderId;
     private BigDecimal amount;
     private String currency;
-    private PaymentType method;
+    private Boolean byCreditCard;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
