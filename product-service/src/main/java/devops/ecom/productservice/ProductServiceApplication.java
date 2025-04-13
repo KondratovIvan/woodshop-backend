@@ -28,10 +28,10 @@ public class ProductServiceApplication {
     }
 
     @Bean
-    public CommandLineRunner run(){
+    public CommandLineRunner run() {
         return args -> {
-            restConfiguration.exposeIdsFor(Product.class) ;
-            this.productService.initProduct();
+            restConfiguration.exposeIdsFor(Product.class);
+//            this.productService.initProduct();
         };
     }
 

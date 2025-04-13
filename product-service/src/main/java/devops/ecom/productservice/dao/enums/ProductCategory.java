@@ -1,8 +1,5 @@
 package devops.ecom.productservice.dao.enums;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-
 public enum ProductCategory {
-        ELECTRONICS  , CLOTHES , FOOD , HEALTH_BEAUTY , SPORT ,BOOKS
+    APPLE, FIR, ELM, CYPRESS, POPLAR, CEDAR, PINE, WILLOW, LINDEN, HAZEL, ROWAN, MAPLE, WALNUT, JASMINE
 }
