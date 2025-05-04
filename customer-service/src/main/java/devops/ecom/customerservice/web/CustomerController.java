@@ -16,6 +16,15 @@ public class CustomerController {
         this.cartService = cartService;
     }
 
+    @GetMapping("/customers/{customerId}/shoppingCart")
+    public ShoppingCart getShoppingCart(@PathVariable String customerId) {
+        try {
+            return cartService.getCartForCustomer(customerId);
+        } catch (CustomerNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @PostMapping
     public ShoppingCart addProductToCart(@RequestBody AddItemRequest addItemRequest) {
         try {

@@ -6,6 +6,8 @@ import devops.ecom.customerservice.model.ShoppingCart;
 import devops.ecom.customerservice.model.ShoppingCartItem;
 
 public interface ShoppingCartService {
+    ShoppingCart getCartForCustomer(String customerId) throws CustomerNotFoundException;
+
     ShoppingCartItem createItem(AddItemRequest addItemRequest);
 
     ShoppingCart addItemToCart(AddItemRequest addItemRequest) throws CustomerNotFoundException;

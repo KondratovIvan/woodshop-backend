@@ -24,11 +24,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public ShoppingCart getCartForCustomer(String customerId) throws CustomerNotFoundException {
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found: " + customerId));
+        return customer.getShoppingCart();
+    }
+
+    @Override
     public ShoppingCartItem createItem(AddItemRequest addItemRequest) {
-        int quantity = 1;
+        int quantity = addItemRequest.getQuantity() > 0 ? addItemRequest.getQuantity() : 1;
         Product p = this.productRestClient.getProduct(addItemRequest.getProductId(), getToken());
-//        Price productPrice = this.productRestClient.getProductPrice(addItemRequest.getProductId());
-//        p.setProductPrice(productPrice);
         p.setPickedColor(addItemRequest.getPickedColor());
         return ShoppingCartItem.builder()
                 .product(p)
@@ -72,10 +77,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart updateItemInCart(ShoppingCartItem item, AddItemRequest addItemRequest, ShoppingCart cart) {
+        int toAdd = addItemRequest.getQuantity() > 0 ? addItemRequest.getQuantity() : 1;
+        int newQty = item.getQuantity() + toAdd;
         int index = cart.getItems().indexOf(item);
-        cart.getItems().get(index).setQuantity(item.getQuantity() + 1);
+        cart.getItems().get(index).setQuantity(newQty);
         cart.getItems().get(index).getProduct().setPickedColor(addItemRequest.getPickedColor());
-        return this.shoppingCartRepo.save(cart);
+        return shoppingCartRepo.save(cart);
 
     }
 
