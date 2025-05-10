@@ -20,4 +20,5 @@ public interface ShoppingCartService {
 
     ShoppingCart increaseItemQuantity(String customerId, String productId) throws CustomerNotFoundException;
 
+    ShoppingCart clearCart(String customerId) throws CustomerNotFoundException;
 }

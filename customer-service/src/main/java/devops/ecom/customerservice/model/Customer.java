@@ -19,7 +19,7 @@ public class Customer {
     private String email;
     private String firstname;
     private String lastname;
-    private String phoneNumber;
+    private String username;
     @DBRef
     private ShoppingCart shoppingCart;
 }

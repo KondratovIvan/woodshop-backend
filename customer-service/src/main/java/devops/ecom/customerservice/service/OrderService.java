@@ -71,4 +71,8 @@ public class OrderService {
         return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
+    public List<Order> getAllOrdersByCustomerId(String customerId) {
+        return orderRepository.findOrdersByCustomerId(customerId);
+    }
+
 }

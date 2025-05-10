@@ -1,5 +1,6 @@
 package devops.ecom.customerservice.service;
 
+import devops.ecom.customerservice.exceptions.CustomerNotFoundException;
 import devops.ecom.customerservice.model.Customer;
 import devops.ecom.customerservice.model.ShoppingCart;
 import devops.ecom.customerservice.repos.CustomerRepo;
@@ -44,33 +45,6 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerRepo = customerRepo;
         this.shoppingCartRepo = shoppingCartRepo;
     }
-
-//    private  String ADMIN_PASSWORD ;
-//    private  String ADMIN_USERNAME ;
-//    private  String KEYCLOAK_URL ;
-//    private String keycloakRealm ;
-//    private Keycloak keycloak ;
-
-//    public CustomerServiceImpl(CustomerRepo customerRepo, ShoppingCartRepo shoppingCartRepo ,
-//                               @Value("${keycloak.auth-server-url}") String KEYCLOAK_URL ,
-//                               @Value("${admin.password}") String ADMIN_PASSWORD ,
-//                               @Value("${admin.username}") String ADMIN_USERNAME  ,
-//                               @Value("${keycloak.realm}") String keycloakRealm) {
-//        this.customerRepo = customerRepo;
-//        this.shoppingCartRepo = shoppingCartRepo;
-//        this.KEYCLOAK_URL = KEYCLOAK_URL ;
-//        this.ADMIN_PASSWORD = ADMIN_PASSWORD ;
-//        this.ADMIN_USERNAME = ADMIN_USERNAME  ;
-//        this.keycloakRealm = keycloakRealm ;
-//        this.keycloak = KeycloakBuilder.builder()
-//                .serverUrl(this.KEYCLOAK_URL)
-//                .realm(keycloakRealm)
-//                .clientId("ecom-app")
-//                .grantType("password")
-//                .username(this.ADMIN_USERNAME)
-//                .password(this.ADMIN_PASSWORD)
-//                .build();
-//    }
 
     private String getAdminAccessToken() {
         Keycloak keycloak = KeycloakBuilder.builder()
@@ -131,5 +105,63 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setLastname(keycloakUser.getLastName());
             customerRepo.save(customer);
         }
+    }
+
+    @Override
+    public void deleteCustomer(String customerId) {
+        String accessToken = getAdminAccessToken();
+
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(keycloakUrl)
+                .realm(keycloakRealm)
+                .clientId(adminClientId)
+                .authorization(accessToken)
+                .build();
+
+        keycloak.realm(keycloakRealm).users().delete(customerId);
+
+        customerRepo.deleteById(customerId);
+    }
+
+    @Override
+    public Customer updateCustomer(String customerId, Customer customerDto) throws CustomerNotFoundException {
+        Customer existingCustomer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found: " + customerId));
+
+        String accessToken = getAdminAccessToken();
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(keycloakUrl)
+                .realm(keycloakRealm)
+                .clientId(adminClientId)
+                .authorization(accessToken)
+                .build();
+
+        UserRepresentation currentUser = keycloak.realm(keycloakRealm)
+                .users()
+                .get(customerId)
+                .toRepresentation();
+
+        // Обновляем только разрешенные поля
+        if (customerDto.getEmail() != null) {
+            currentUser.setEmail(customerDto.getEmail());
+            existingCustomer.setEmail(customerDto.getEmail());
+        }
+        if (customerDto.getFirstname() != null) {
+            currentUser.setFirstName(customerDto.getFirstname());
+            existingCustomer.setFirstname(customerDto.getFirstname());
+        }
+        if (customerDto.getLastname() != null) {
+            currentUser.setLastName(customerDto.getLastname());
+            existingCustomer.setLastname(customerDto.getLastname());
+        }
+
+        // Обновляем пользователя в Keycloak
+        keycloak.realm(keycloakRealm)
+                .users()
+                .get(customerId)
+                .update(currentUser);
+
+        // Сохраняем изменения в базе данных
+        return customerRepo.save(existingCustomer);
     }
 }

@@ -37,9 +37,9 @@ public class ProductRestController {
         return this.productService.createProduct(product);
     }
 
-    @PutMapping
-    public Product update(@RequestBody Product product) {
-        return this.productService.updateProduct(product);
+    @PutMapping("{productId}")
+    public Product update(@PathVariable String productId, @RequestBody Product product) {
+        return this.productService.updateProduct(productId, product);
     }
 
     @GetMapping("event/{productId}/{customerId}/{eventType}")

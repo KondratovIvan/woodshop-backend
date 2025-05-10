@@ -123,6 +123,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return savedCart;
     }
 
+    @Override
+    public ShoppingCart clearCart(String customerId) throws CustomerNotFoundException {
+        ShoppingCart cart = getCartForCustomer(customerId);
+        cart.getItems().clear();
+        return shoppingCartRepo.save(cart);
+    }
+
     private ShoppingCartItem checkProductInCart(ShoppingCart cart, String productId) {
         for (ShoppingCartItem item : cart.getItems()) {
             if (productId.equals(item.getProduct().getProductId()))

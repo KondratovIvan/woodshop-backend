@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,11 +34,40 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        product.setAddingDate(new Date());
-        Product saved = this.productRepository.save(product);
-        return saved;
+    public Product updateProduct(String productId, Product productDto) {
+        Product existingProduct = getProductById(productId);
+
+        Optional.ofNullable(productDto.getName())
+                .ifPresent(existingProduct::setName);
+        Optional.ofNullable(productDto.getBrand())
+                .ifPresent(existingProduct::setBrand);
+        Optional.ofNullable(productDto.getDescription())
+                .ifPresent(existingProduct::setDescription);
+        Optional.ofNullable(productDto.getCategory())
+                .ifPresent(existingProduct::setCategory);
+        Optional.ofNullable(productDto.getStatus())
+                .ifPresent(existingProduct::setStatus);
+        Optional.ofNullable(productDto.getProductPrice())
+                .ifPresent(existingProduct::setProductPrice);
+        Optional.ofNullable(productDto.getColors())
+                .ifPresent(existingProduct::setColors);
+        Optional.ofNullable(productDto.getDimension())
+                .ifPresent(existingProduct::setDimension);
+
+        // Обновляем список Base64-строк изображений, если он пришёл в DTO
+        Optional.ofNullable(productDto.getProductImagesBas64())
+                .ifPresent(existingProduct::setProductImagesBas64);
+
+        if (productDto.getQuantity() > 0) {
+            existingProduct.setQuantity(productDto.getQuantity());
+        }
+
+        existingProduct.setSelected(productDto.isSelected());
+        existingProduct.setAddingDate(new Date());
+
+        return productRepository.save(existingProduct);
     }
+
 
     @Override
     public void deleteProduct(String productId) {
