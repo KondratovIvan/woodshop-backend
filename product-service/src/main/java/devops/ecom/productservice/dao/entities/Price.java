@@ -7,9 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor @NoArgsConstructor @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Price {
-    private Currency currency ;
-    private long price ;
-    private String symbol ;
+    private Currency currency;
+    private long price;
+    private String symbol;
 }

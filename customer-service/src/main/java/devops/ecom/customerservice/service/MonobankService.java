@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class MonobankService {
     private static final String MONOBANK_API_URL = "https://api.monobank.ua/api/merchant/invoice/create";
-    private static final String MONOBANK_API_TOKEN = "uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8"; // замените на свой
+    private static final String MONOBANK_API_TOKEN = "uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8";
 
     private final RestTemplate restTemplate;
 

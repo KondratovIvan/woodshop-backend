@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PageInfo {
-    private int totalPages ;
-    private int size ;
+    private int totalPages;
+    private int size;
     private int totalElements;
 }

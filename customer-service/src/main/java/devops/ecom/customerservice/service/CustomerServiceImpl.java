@@ -49,8 +49,8 @@ public class CustomerServiceImpl implements CustomerService {
     private String getAdminAccessToken() {
         Keycloak keycloak = KeycloakBuilder.builder()
                 .serverUrl(keycloakUrl)
-                .realm("master") // Админ-клиенты в Keycloak всегда живут в master-реалме!
-                .clientId("admin-cli") // Встроенный клиент Keycloak
+                .realm("master")
+                .clientId("admin-cli")
                 .username(adminUsername)
                 .password(adminPassword)
                 .grantType("password")
@@ -141,7 +141,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .get(customerId)
                 .toRepresentation();
 
-        // Обновляем только разрешенные поля
         if (customerDto.getEmail() != null) {
             currentUser.setEmail(customerDto.getEmail());
             existingCustomer.setEmail(customerDto.getEmail());
@@ -155,13 +154,11 @@ public class CustomerServiceImpl implements CustomerService {
             existingCustomer.setLastname(customerDto.getLastname());
         }
 
-        // Обновляем пользователя в Keycloak
         keycloak.realm(keycloakRealm)
                 .users()
                 .get(customerId)
                 .update(currentUser);
 
-        // Сохраняем изменения в базе данных
         return customerRepo.save(existingCustomer);
     }
 }

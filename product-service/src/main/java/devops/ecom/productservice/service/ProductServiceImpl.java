@@ -54,7 +54,6 @@ public class ProductServiceImpl implements ProductService {
         Optional.ofNullable(productDto.getDimension())
                 .ifPresent(existingProduct::setDimension);
 
-        // Обновляем список Base64-строк изображений, если он пришёл в DTO
         Optional.ofNullable(productDto.getProductImagesBas64())
                 .ifPresent(existingProduct::setProductImagesBas64);
 
