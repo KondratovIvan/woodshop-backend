@@ -1,4 +1,12 @@
 spring:
+  kafka:
+    consumer:
+      bootstrap-servers: ${BOOTSTRAP_KAFKA_SERVER:localhost}:${BOOTSTRAP_KAFKA_PORT:9092}
+      key-deserializer:   org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+      auto-offset-reset: latest
+
   cloud:
     stream:
       function:
@@ -6,11 +14,5 @@ spring:
       bindings:
         pageEventConsumer-in-0:
           destination: R1
-  kafka:
-    consumer:
-      auto-offset-reset: earliest
-      bootstrap-servers: "${BOOTSTRAP_KAFKA_SERVER:localhost}:${BOOTSTRAP_KAFKA_PORT:9092}"
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      properties:
-        spring.json.trusted.packages: com.learning.events
+          group: pageEventGroup
+          content-type: text/plain

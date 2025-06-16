@@ -15,12 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Document
-public class PageEvent {
+public class PageEventSearchByCategory {
     @Id
-    private String pageEventId ;
-    private String userId ;
-    private Date date ;
-    private long duration ;
-    private String type ;
-    private String productId ;
+    private String pageEventId;
+    private String userId;
+    private Date date;
+    private String type;
+    private String category;
 }

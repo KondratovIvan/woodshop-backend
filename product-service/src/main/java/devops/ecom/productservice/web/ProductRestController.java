@@ -1,9 +1,8 @@
 package devops.ecom.productservice.web;
 
-import devops.ecom.productservice.dao.entities.PageEvent;
-import devops.ecom.productservice.dao.entities.PageInfo;
-import devops.ecom.productservice.dao.entities.Product;
+import devops.ecom.productservice.dao.entities.*;
 import devops.ecom.productservice.dao.enums.PageEventType;
+import devops.ecom.productservice.dao.enums.ProductCategory;
 import devops.ecom.productservice.service.ProductService;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.web.bind.annotation.*;
@@ -42,16 +41,36 @@ public class ProductRestController {
         return this.productService.updateProduct(productId, product);
     }
 
-    @GetMapping("event/{productId}/{customerId}/{eventType}")
-    public void catchEventType(@PathVariable String productId, @PathVariable String customerId, @PathVariable String eventType) {
-        PageEvent event = PageEvent.builder()
-                .productId(productId)
-                .type(PageEventType.valueOf(eventType))
+    @GetMapping("event/click/{productName:.+}/{customerId}")
+    public void catchEventType(@PathVariable String productName, @PathVariable String customerId) {
+        PageEventClickProduct event = PageEventClickProduct.builder()
+                .productName(productName)
+                .type(PageEventType.CLICK_PRODUCT)
                 .date(new Date())
-                .duration(1L)
                 .userId(customerId)
                 .build();
         this.streamBridge.send("R1", event);
     }
 
+    @GetMapping("event/category/{category}/{customerId}")
+    public void catchSearchByCategoryEvent(@PathVariable ProductCategory category, @PathVariable String customerId) {
+        PageEventSearchByCategory event = PageEventSearchByCategory.builder()
+                .category(category)
+                .type(PageEventType.SEARCH_BY_CATEGORY)
+                .date(new Date())
+                .userId(customerId)
+                .build();
+        this.streamBridge.send("R1", event);
+    }
+
+    @GetMapping("event/keyword/{keyword}/{customerId}")
+    public void catchSearchByKeywordEvent(@PathVariable String keyword, @PathVariable String customerId) {
+        PageEventSearchByKeyword event = PageEventSearchByKeyword.builder()
+                .keyword(keyword)
+                .type(PageEventType.SEARCH_BY_KEYWORD)
+                .date(new Date())
+                .userId(customerId)
+                .build();
+        this.streamBridge.send("R1", event);
+    }
 }

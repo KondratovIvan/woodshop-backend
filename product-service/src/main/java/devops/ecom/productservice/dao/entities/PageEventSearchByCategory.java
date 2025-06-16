@@ -1,6 +1,7 @@
 package devops.ecom.productservice.dao.entities;
 
 import devops.ecom.productservice.dao.enums.PageEventType;
+import devops.ecom.productservice.dao.enums.ProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +14,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PageEvent {
+public class PageEventSearchByCategory {
     @Id
     private String pageEventId;
     private String userId;
     private Date date;
-    private long duration;
     private PageEventType type;
-    private String productId;
+    private ProductCategory category;
 }
